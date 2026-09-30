@@ -40,7 +40,3 @@ build/
 
 ### Framework-generated artifacts ###
 logs/*.log
-src/test/resources/reports/extent-report/
-src/test/resources/reports/performance-report/
-src/test/resources/reports/performance-trend/
-src/test/resources/reports/regression-report/

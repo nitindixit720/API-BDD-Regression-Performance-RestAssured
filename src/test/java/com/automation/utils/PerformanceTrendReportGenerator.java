@@ -73,7 +73,7 @@ public final class PerformanceTrendReportGenerator {
 
         html.append("<h1>Performance Trend Report</h1>")
                 .append("<div class=\"subtitle\">Showing last ").append(history.size())
-                .append(" run(s) (oldest to newest) | Regression threshold: ")
+                .append(history.size() == 1 ? " run" : " runs").append(" (oldest to newest) | Regression threshold: ")
                 .append(config.getRegressionResponseTimeThresholdPercent()).append("%</div>");
 
         html.append("<div class=\"tiles\">")
@@ -87,6 +87,13 @@ public final class PerformanceTrendReportGenerator {
                         latestRegressionResult.isRegressionDetected() ? "bad" : "ok"))
                 .append("</div>");
 
+        if (history.size() < 2) {
+            html.append("<div class=\"section\"><div class=\"success-banner\" style=\"background:rgba(126,169,255,0.12);")
+                    .append("border-color:rgba(126,169,255,0.35);color:#7ea9ff;\">")
+                    .append("Only 1 run recorded so far - this point is today's baseline. Run the performance suite ")
+                    .append("again to start seeing a trend line.</div></div>");
+        }
+
         html.append("<div class=\"panel section\"><h2>Response Time Trend (ms)</h2><canvas id=\"responseTrendChart\"></canvas></div>");
         html.append("<div class=\"panel section\"><h2>Throughput Trend (req/sec)</h2><canvas id=\"throughputTrendChart\"></canvas></div>");
         html.append("<div class=\"panel section\"><h2>Error Rate Trend (%)</h2><canvas id=\"errorTrendChart\"></canvas></div>");
@@ -97,16 +104,17 @@ public final class PerformanceTrendReportGenerator {
 
         html.append("<script>");
         html.append("const trendLabels=").append(toJson(timestamps)).append(";");
+        String pointStyle = "pointRadius:6,pointHoverRadius:8,pointBackgroundColor:";
         html.append("new Chart(document.getElementById('responseTrendChart'),{type:'line',data:{labels:trendLabels,datasets:[")
-                .append("{label:'Avg Response (ms)',data:").append(toJson(avgResponse)).append(",borderColor:'#4fd1ff',tension:.25},")
-                .append("{label:'P95 (ms)',data:").append(toJson(p95)).append(",borderColor:'#b6a6ff',tension:.25},")
-                .append("{label:'P99 (ms)',data:").append(toJson(p99)).append(",borderColor:'#ffb84f',tension:.25}")
+                .append("{label:'Avg Response (ms)',data:").append(toJson(avgResponse)).append(",borderColor:'#4fd1ff',tension:.25,").append(pointStyle).append("'#4fd1ff'},")
+                .append("{label:'P95 (ms)',data:").append(toJson(p95)).append(",borderColor:'#b6a6ff',tension:.25,").append(pointStyle).append("'#b6a6ff'},")
+                .append("{label:'P99 (ms)',data:").append(toJson(p99)).append(",borderColor:'#ffb84f',tension:.25,").append(pointStyle).append("'#ffb84f'}")
                 .append("]},options:trendOpts('ms')});");
         html.append("new Chart(document.getElementById('throughputTrendChart'),{type:'line',data:{labels:trendLabels,datasets:[")
-                .append("{label:'Throughput (req/s)',data:").append(toJson(throughput)).append(",borderColor:'#3ddc84',tension:.25}")
+                .append("{label:'Throughput (req/s)',data:").append(toJson(throughput)).append(",borderColor:'#3ddc84',tension:.25,").append(pointStyle).append("'#3ddc84'}")
                 .append("]},options:trendOpts('req/s')});");
         html.append("new Chart(document.getElementById('errorTrendChart'),{type:'line',data:{labels:trendLabels,datasets:[")
-                .append("{label:'Error Rate (%)',data:").append(toJson(errorRate)).append(",borderColor:'#ffb84f',tension:.25}")
+                .append("{label:'Error Rate (%)',data:").append(toJson(errorRate)).append(",borderColor:'#ffb84f',tension:.25,").append(pointStyle).append("'#ffb84f'}")
                 .append("]},options:trendOpts('%')});");
         html.append("function trendOpts(yLabel){return {responsive:true,plugins:{legend:{labels:{color:'#e8edff'}}},"
                 + "scales:{x:{ticks:{color:'#9aa8d1'},grid:{color:'rgba(255,255,255,0.05)'}},"

@@ -299,8 +299,10 @@ the tests).
      intentionally leaves out).
 
 5. **Performance History (CSV)** and **Console / File Logs** remain as raw inputs to the
-   above: `target/performance-reports/history/performance_history.csv` (regression baseline)
-   and `logs/execution.log` (pattern: `yyyy-MM-dd HH:mm:ss [thread] LEVEL logger - message`).
+   above: `src/test/resources/reports/performance-trend/performance_history.csv` (regression
+   baseline - deliberately kept outside `target/` so it survives `mvn clean` and the trend
+   genuinely accumulates across runs/CI builds instead of resetting every clean build) and
+   `logs/execution.log` (pattern: `yyyy-MM-dd HH:mm:ss [thread] LEVEL logger - message`).
 
 ## CI/CD Pipeline (Jenkins)
 

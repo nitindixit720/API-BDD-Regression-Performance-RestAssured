@@ -18,11 +18,18 @@ import java.util.List;
  * can be compared against a baseline (see RegressionDetector) and rendered as a trend line
  * (see PerformanceTrendReportGenerator). Kept as a flat CSV rather than a database to keep
  * the framework dependency-free and CI-artifact friendly.
+ *
+ * Deliberately stored under src/test/resources (alongside the trend report itself) rather
+ * than target/ - target/ is deleted by "mvn clean", which would otherwise reset the trend
+ * to a fresh single-run baseline on every clean build. Keeping it here means the trend
+ * genuinely accumulates across CI runs, and the history file can be committed to source
+ * control alongside the reports it drives.
  */
 public final class PerformanceHistoryManager {
 
     private static final Logger log = LoggerUtil.getLogger(PerformanceHistoryManager.class);
-    private static final Path HISTORY_FILE = Paths.get("target", "performance-reports", "history", "performance_history.csv");
+    private static final Path HISTORY_FILE = Paths.get(
+            "src", "test", "resources", "reports", "performance-trend", "performance_history.csv");
 
     private PerformanceHistoryManager() {
     }

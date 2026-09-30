@@ -278,7 +278,12 @@ the tests).
    - Content: summary tiles including **Regressions Detected**, three trend line charts
      (avg/P95/P99 response time, throughput, error rate) across up to
      `performance.history.size` historical runs sharing the same label, the latest run's
-     configuration/endpoints, and a run-history table (newest first).
+     configuration/endpoints, and a run-history table (newest first). With fewer than 2
+     historical runs, the charts show a single clearly-marked point plus a banner
+     explaining it's the baseline (a line chart can't draw a line from one point).
+   - Also emits `PerformanceTrend.json` in the same folder - the same data (label,
+     regression thresholds/result, latest run, and full history) as structured JSON, for
+     any external tooling/dashboard that wants to consume trend data without parsing HTML.
 
 4. **Regression Report (Chart.js, functional results)**
    - Location: `src/test/resources/reports/regression-report/RegressionReport.html`

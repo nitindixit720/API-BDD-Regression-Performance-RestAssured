@@ -35,14 +35,68 @@ public final class PerformanceTrendReportGenerator {
                                  Map<String, String[]> apiEndpoints) {
         try {
             Files.createDirectories(REPORT_DIR);
+
             Path reportFile = REPORT_DIR.resolve("PerformanceTrendReport.html");
             try (Writer writer = Files.newBufferedWriter(reportFile)) {
                 writer.write(buildHtml(latestRun, history, latestRegressionResult, apiEndpoints));
             }
             log.info("Performance trend report generated at {}", reportFile.toAbsolutePath());
+
+            Path jsonFile = REPORT_DIR.resolve("PerformanceTrend.json");
+            try (Writer writer = Files.newBufferedWriter(jsonFile)) {
+                writer.write(buildJson(latestRun, history, latestRegressionResult));
+            }
+            log.info("Performance trend data (JSON) generated at {}", jsonFile.toAbsolutePath());
         } catch (IOException e) {
             log.warn("Unable to generate performance trend report: {}", e.getMessage());
         }
+    }
+
+    private static String buildJson(PerformanceRunRecord latestRun, List<PerformanceRunRecord> history,
+                                     RegressionDetector.Result latestRegressionResult) throws IOException {
+        Map<String, Object> root = new LinkedHashMap<>();
+        root.put("label", latestRun.getLabel());
+        root.put("totalRuns", history.size());
+        root.put("regressionThresholds", Map.of(
+                "responseTimePercent", ConfigManager.getInstance().getRegressionResponseTimeThresholdPercent(),
+                "throughputPercent", ConfigManager.getInstance().getRegressionThroughputThresholdPercent(),
+                "errorRatePercent", ConfigManager.getInstance().getRegressionErrorRateThresholdPercent()
+        ));
+        root.put("regressionsDetected", latestRegressionResult.isRegressionDetected());
+        root.put("regressionReasons", latestRegressionResult.getReasons());
+        root.put("latest", runToMap(latestRun));
+
+        List<Map<String, Object>> historyList = new ArrayList<>();
+        for (PerformanceRunRecord run : history) {
+            historyList.add(runToMap(run));
+        }
+        root.put("history", historyList);
+
+        return JSON.writerWithDefaultPrettyPrinter().writeValueAsString(root);
+    }
+
+    private static Map<String, Object> runToMap(PerformanceRunRecord run) {
+        PerformanceMetrics m = run.getMetrics();
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("timestamp", run.getTimestamp());
+        map.put("environment", run.getEnvironment());
+        map.put("threads", run.getThreads());
+        map.put("rampUpSeconds", run.getRampUpSeconds());
+        map.put("durationSeconds", run.getDurationSeconds());
+        map.put("totalRequests", m.getTotalRequests());
+        map.put("successCount", m.getSuccessCount());
+        map.put("failureCount", m.getFailureCount());
+        map.put("avgResponseTimeMs", m.getAvgResponseTimeMs());
+        map.put("minResponseTimeMs", m.getMinResponseTimeMs());
+        map.put("maxResponseTimeMs", m.getMaxResponseTimeMs());
+        map.put("p50", m.getP50());
+        map.put("p75", m.getP75());
+        map.put("p90", m.getP90());
+        map.put("p95", m.getP95());
+        map.put("p99", m.getP99());
+        map.put("throughputPerSec", m.getThroughputPerSec());
+        map.put("errorRatePercent", m.getErrorRatePercent());
+        return map;
     }
 
     private static String buildHtml(PerformanceRunRecord latestRun, List<PerformanceRunRecord> history,

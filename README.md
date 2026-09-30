@@ -10,6 +10,7 @@ layers as needed.
 
 ## Table of Contents
 
+- [Screenshots](#screenshots)
 - [Architecture Overview](#architecture-overview)
 - [Tech Stack](#tech-stack)
 - [Prerequisites](#prerequisites)
@@ -23,6 +24,27 @@ layers as needed.
 - [Scope Notes](#scope-notes)
 - [Troubleshooting](#troubleshooting)
 - [Adapting This Framework to Your Own API](#adapting-this-framework-to-your-own-api)
+
+## Screenshots
+
+**Performance Report** - response time/throughput/thread/error time series, distribution
+histogram, percentile bars, and a fixed-SLA assertion summary:
+
+![Performance Report](docs/screenshots/performance-report.png)
+
+**Performance Trend Report** - response time/throughput/error-rate trend lines across
+historical runs, with regression detection:
+
+![Performance Trend Report](docs/screenshots/performance-trend-report.png)
+
+**Regression Report** - pass-rate gauge, pass/fail/skip breakdown, and expandable
+scenario/step detail, parsed from Cucumber's own JSON output:
+
+![Regression Report](docs/screenshots/regression-report.png)
+
+**Extent Report** - step-level execution detail via the Cucumber adapter:
+
+![Extent Report](docs/screenshots/extent-report.png)
 
 ## Architecture Overview
 

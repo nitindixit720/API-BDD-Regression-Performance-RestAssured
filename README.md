@@ -380,4 +380,4 @@ mvn clean test -Denv=DEV "-Dcucumber.filter.tags=@Smoke" -X
 
 ## License
 
-Add your own license here (e.g. MIT) before publishing.
+MIT License - see [LICENSE](LICENSE).

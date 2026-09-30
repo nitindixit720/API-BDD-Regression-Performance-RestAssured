@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="BDD-API-Performance-Suite" parallel="none" verbose="1">
+    <listeners>
+        <listener class-name="com.automation.utils.RetryTransformer"/>
+        <listener class-name="com.automation.utils.RegressionReportSuiteListener"/>
+    </listeners>
+    <test name="API-Tests">
+        <classes>
+            <class name="com.automation.runners.TestRunner"/>
+        </classes>
+    </test>
+</suite>
